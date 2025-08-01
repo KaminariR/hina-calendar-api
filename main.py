@@ -7,10 +7,13 @@ app = Flask(__name__)
 @app.route('/get-events', methods=['GET'])
 def get_events():
     SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-    SERVICE_ACCOUNT_FILE = 'credentials.json'
+    import os
+import json
 
-    creds = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+credentials_info = json.loads(os.environ['GOOGLE_CREDENTIALS'])
+creds = service_account.Credentials.from_service_account_info(
+    credentials_info, scopes=SCOPES)
+
 
     service = build('calendar', 'v3', credentials=creds)
     events_result = service.events().list(
