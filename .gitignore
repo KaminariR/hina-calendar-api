@@ -1,3 +1,11 @@
+# Fisiere de credentiale
 credentials.json
+.env
+
+# Fisiere generate automat
 __pycache__/
 *.pyc
+
+# Alte posibile junk-uri
+*.log
+.DS_Store
