@@ -3,6 +3,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import os
 import json
+from datetime import datetime, timezone
 
 app = Flask(__name__)
 
@@ -18,9 +19,17 @@ def get_events():
 
     # Build Google Calendar service
     service = build('calendar', 'v3', credentials=creds)
+
+    now = datetime.now(timezone.utc).isoformat()
+
     events_result = service.events().list(
-        calendarId='primary', maxResults=5, singleEvents=True,
-        orderBy='startTime').execute()
+        calendarId='primary',
+        timeMin=now,
+        maxResults=5,
+        singleEvents=True,
+        orderBy='startTime'
+    ).execute()
+
     events = events_result.get('items', [])
 
     return jsonify(events)
@@ -28,3 +37,4 @@ def get_events():
 # Only needed for local testing
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
+
