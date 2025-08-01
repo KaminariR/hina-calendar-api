@@ -33,4 +33,25 @@ def get_events():
         orderBy='startTime'
     ).execute()
 
-    event
+    events = events_result.get('items', [])
+    return jsonify(events)
+
+@app.route('/get-calendars', methods=['GET'])
+def get_calendars():
+    SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+
+    credentials_info = json.loads(os.environ['GOOGLE_CREDENTIALS'])
+    creds = service_account.Credentials.from_service_account_info(
+        credentials_info, scopes=SCOPES
+    )
+
+    service = build('calendar', 'v3', credentials=creds)
+
+    calendar_list = service.calendarList().list().execute()
+    return jsonify(calendar_list.get('items', []))
+
+# Punctul de pornire pentru Render
+def start():
+    app.run(host='0.0.0.0', port=8080)
+
+start()
