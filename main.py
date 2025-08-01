@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 
 app = Flask(__name__)
 
-# Funcție pentru autentificare cu Google
 def get_calendar_service():
     SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
     credentials_info = json.loads(os.environ['GOOGLE_CREDENTIALS'])
@@ -16,7 +15,6 @@ def get_calendar_service():
     )
     return build('calendar', 'v3', credentials=creds)
 
-# ✅ Endpoint: obține următoarele 5 evenimente
 @app.route('/get-events', methods=['GET'])
 def get_events():
     service = get_calendar_service()
@@ -33,7 +31,6 @@ def get_events():
     events = events_result.get('items', [])
     return jsonify(events)
 
-# ✅ Endpoint: obține toate calendarele vizibile
 @app.route('/get-calendars', methods=['GET'])
 def get_calendars():
     service = get_calendar_service()
