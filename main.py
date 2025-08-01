@@ -7,19 +7,19 @@ from datetime import datetime, timezone
 
 app = Flask(__name__)
 
-@app.route('/get-events', methods=['GET'])
-def get_events():
+# Funcție comună pentru autentificare
+def get_calendar_service():
     SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-
-    # Load credentials from environment variable
     credentials_info = json.loads(os.environ['GOOGLE_CREDENTIALS'])
     creds = service_account.Credentials.from_service_account_info(
         credentials_info, scopes=SCOPES
     )
+    return build('calendar', 'v3', credentials=creds)
 
-    # Build Google Calendar service
-    service = build('calendar', 'v3', credentials=creds)
-
+# ✅ Endpoint: Obține evenimentele viitoare
+@app.route('/get-events', methods=['GET'])
+def get_events():
+    service = get_calendar_service()
     now = datetime.now(timezone.utc).isoformat()
 
     events_result = service.events().list(
@@ -31,10 +31,11 @@ def get_events():
     ).execute()
 
     events = events_result.get('items', [])
-
     return jsonify(events)
 
-# Only needed for local testing
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+# ✅ Endpoint: Obține toate calendarele disponibile
+@app.route('/get-calendars', methods=['GET'])
+def get_calendars():
+    service = get_calendar_service()
+
 
